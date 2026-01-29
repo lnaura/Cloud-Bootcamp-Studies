@@ -1,0 +1,26 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+# Ubuntu, Windows, MacOS를 지원한다.
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.x] # 템플릿 기본값: [10.x, 12.x, 14.x]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: npm install
+# --if-present 옵션은 npm 스크립트가 존재할 때만 실행시키라는 의미이다.
+# 만약 build 스크립트가 없는 경우, 오류 없이 지나간다.
+    - run: npm run build --if-present
+    - run: npm test
